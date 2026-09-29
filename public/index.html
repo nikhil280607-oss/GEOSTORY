@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GeoStory: a journey through human history</title>
+  <meta name="description" content="Travel through 13.8 billion years on an interactive map, and follow connected stories through time." />
+  <meta name="theme-color" content="#0b1422" />
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/story.css" />
+  <link rel="stylesheet" href="css/reader.css" />
+  <link rel="stylesheet" href="css/panels.css" />
+</head>
+<body>
+  <!-- If someone double-clicks index.html, modules can't load. Explain what to do instead. -->
+  <script>
+    if (location.protocol === "file:") {
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.innerHTML =
+          '<div class="file-warning"><h1>Start GeoStory with the server</h1>' +
+          '<p>This page can’t run by double-clicking it. Open a terminal in the GeoStory folder and run:</p>' +
+          '<pre>npm start</pre><p>Then open <strong>http://localhost:5173</strong> in your browser.</p></div>';
+      });
+    }
+  </script>
+
+  <div class="app">
+    <header class="hdr">
+      <a class="brand" href="#" aria-label="GeoStory home">
+        <img src="img/logo.svg" alt="" width="34" height="34" />
+        <span class="brand-text">
+          <span class="brand-name">GeoStory</span>
+          <span class="brand-tag">A journey through human history</span>
+        </span>
+      </a>
+      <div class="hdr-actions" id="header-actions"></div>
+    </header>
+
+    <main class="stage" id="stage">
+      <div class="map" id="map"></div>
+      <canvas class="cosmos" id="cosmos" aria-hidden="true"></canvas>
+      <p class="map-status" id="map-status" hidden></p>
+
+      <div class="era-card" id="era-card" aria-live="polite"></div>
+      <nav class="legend" id="legend" aria-label="Story threads"></nav>
+      <div class="zoom-controls" id="zoom-controls" role="group" aria-label="Map zoom"></div>
+
+      <aside class="story-card" id="story-card" hidden></aside>
+    </main>
+
+    <footer class="timeline" id="timeline" aria-label="Timeline"></footer>
+  </div>
+
+  <div class="reader" id="reader" hidden></div>
+  <div class="journal" id="journal" hidden></div>
+  <div class="intro" id="intro" hidden></div>
+
+  <script src="vendor/d3.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

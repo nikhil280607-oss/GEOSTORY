@@ -1,0 +1,76 @@
+/* panels.css — the journal slide-over and the welcome screen. */
+
+/* ---------------- Journal ---------------- */
+.journal { position: fixed; inset: 0; z-index: 40; }
+.jr-scrim { position: absolute; inset: 0; background: rgba(5, 10, 18, 0.55); opacity: 0; transition: opacity 0.25s; }
+.jr-panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: min(410px, 92vw);
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 20px 20px 16px; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--paper); color: var(--ink-text);
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.35);
+  transform: translateX(100%); transition: transform 0.3s var(--ease-out);
+}
+.journal.is-open .jr-scrim { opacity: 1; }
+.journal.is-open .jr-panel { transform: none; }
+.jr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.jr-kicker { font: 800 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-deep); }
+.jr-title { font: 600 34px/1.05 var(--display); color: #1f1810; }
+.jr-panel .icon-btn { background: rgba(255, 255, 255, 0.5); border-color: var(--sepia-line); color: var(--ink-text); }
+.jr-group { border-top: 1px solid var(--sepia-line); padding-top: 12px; }
+.jr-group-title { display: flex; align-items: center; gap: 9px; font: 800 11px var(--ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-text); margin-bottom: 6px; }
+.jr-swatch { width: 10px; height: 10px; border-radius: 50%; background: var(--thread); box-shadow: 0 0 0 3px color-mix(in srgb, var(--thread) 30%, transparent); }
+.jr-item { display: flex; align-items: center; gap: 8px; }
+.jr-open {
+  flex: 1; min-width: 0; display: grid; gap: 2px; text-align: left;
+  padding: 9px 10px; border-radius: 10px; border: 0; background: none; cursor: pointer;
+}
+.jr-open:hover { background: rgba(201, 162, 74, 0.14); }
+.jr-item-era { font: 700 11px var(--ui); letter-spacing: 0.04em; color: var(--ink-text-2); }
+.jr-item-title { font: 600 19px/1.2 var(--display); color: #1f1810; }
+.jr-remove { width: 30px; height: 30px; }
+.jr-remove svg { width: 15px; height: 15px; }
+.jr-empty { text-align: center; padding: 30px 10px; color: var(--ink-text-2); font: 500 14px/1.6 var(--ui); display: grid; justify-items: center; gap: 8px; }
+.jr-empty-mark { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: rgba(201, 162, 74, 0.18); color: var(--gold-deep); }
+.jr-empty-title { font: 600 24px var(--display); color: #1f1810; }
+.jr-foot { margin-top: auto; font: 500 12px var(--ui); color: var(--ink-text-2); text-align: center; padding-top: 10px; }
+
+/* ---------------- Welcome ---------------- */
+.intro {
+  position: fixed; inset: 0; z-index: 60; overflow-y: auto;
+  display: grid; place-items: center; padding: 24px;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(20, 37, 61, 0.78), rgba(5, 10, 18, 0.96) 70%);
+  backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.intro.is-open { opacity: 1; }
+.intro-card {
+  max-width: 600px; text-align: center; color: var(--text);
+  transform: translateY(12px); transition: transform 0.6s var(--ease-out);
+}
+.intro.is-open .intro-card { transform: none; }
+.intro-logo { width: 64px; height: 64px; margin: 0 auto 14px; display: block; }
+.intro-kicker { font: 800 11px var(--ui); letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
+.intro-title { font: 600 clamp(58px, 9vw, 96px)/0.95 var(--display); color: var(--parchment); margin: 10px 0 14px; letter-spacing: 0.005em; }
+.intro-lede { font: 400 clamp(16px, 1.6vw, 19px)/1.6 var(--read); color: var(--text-2); max-width: 32em; margin: 0 auto; }
+.intro-steps {
+  list-style: none; padding: 0; margin: 24px auto 26px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 560px;
+}
+.intro-steps li {
+  padding: 12px 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: rgba(11, 20, 34, 0.6); font: 500 13px/1.45 var(--ui); color: var(--text-2);
+}
+.intro-steps strong { display: block; font: 600 20px var(--display); color: var(--gold-bright); margin-bottom: 2px; }
+.intro-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.intro-actions .btn { padding: 12px 20px; font-size: 14px; }
+.intro-foot { font: 500 12px var(--ui); color: var(--text-3); margin-top: 18px; }
+
+@media (max-width: 640px) {
+  .intro-steps { grid-template-columns: 1fr; }
+}
+@media (max-height: 640px) {
+  .intro-logo { width: 48px; height: 48px; margin-bottom: 8px; }
+  .intro-steps { margin: 16px auto 18px; }
+}

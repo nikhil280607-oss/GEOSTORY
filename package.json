@@ -1,0 +1,14 @@
+{
+  "name": "geostory",
+  "version": "3.0.0",
+  "description": "GeoStory: a spatiotemporal journey through human history (HCI & Visualization course project)",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "check": "node scripts/check-content.mjs",
+    "test:layout": "node scripts/test-layout.mjs"
+  },
+  "license": "UNLICENSED"
+}
