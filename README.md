@@ -16,8 +16,7 @@ Course project for *HCI & Visualization*, IIT Ropar.
 - [Technologies used](#technologies-used)
 - [Features](#features)
 - [Run it on your computer](#run-it-on-your-computer)
-- [Project progress](#project-progress)
-- [What we improved after user testing (Lab 8)](#what-we-improved-after-user-testing-lab-8)
+- [What we improved after user testing](#what-we-improved-after-user-testing)
 - [How the code is organised](#how-the-code-is-organised)
 - [Testing](#testing)
 - [Credits and licences](#credits-and-licences)
@@ -45,7 +44,7 @@ So a learner has to choose between a timeline without places, a map without time
 5. **Accessible.** Usable with the keyboard alone, labelled for screen readers, and readable at 200% browser zoom.
 6. **Worth coming back to.** Let users save stories, and ask follow-up questions that are answered only from the story's own text.
 
-The two key user tasks (defined in Lab 5) are:
+The two key user tasks are:
 
 - **T1 – Navigate time to discover activity:** go to a period and find what was happening in a region.
 - **T2 – Explore a chronicle:** open a story and read its full narrative.
@@ -130,22 +129,11 @@ Then open **http://localhost:5173** in your browser. Press `Ctrl + C` in the ter
 
 Import the repository into [Vercel](https://vercel.com), then add `GEMINI_API_KEY` under *Settings → Environment Variables* and redeploy. No build settings are needed.
 
-## Project progress
+## What we improved after user testing
 
-| Lab | Stage | What we did |
-|---|---|---|
-| 4 | Define | Literature review, gaps in existing tools, proposed solution |
-| 5 | Design | Two key user tasks, clickable prototype, design rationale |
-| 6 | Build | First working build (v3.0): timeline, historical map, stories, threads, chronicle, journal, Ask the Chronicler |
-| 7 | Test | User testing with 5 people, heuristic evaluation, accessibility check ([report](docs/Lab7_Usability_Test_Report.pdf)) |
-| **8** | **Improve** | **This version (v3.1): all 9 improvements from the Lab 7 report, GitHub, documentation** |
-| 9 | Validate | Next |
+We tested the first build with five users, a heuristic evaluation and an accessibility check. All five users finished both tasks (SUS 79), but most did not understand what GeoStory offers, especially the threads. The table lists every issue from the [test report](docs/Lab7_Usability_Test_Report.pdf) and what changed. Severity is on Nielsen's 0–4 scale.
 
-## What we improved after user testing (Lab 8)
-
-In Lab 7, all five users finished both tasks (SUS 79), but most did not understand what GeoStory offers, especially the threads. The table lists every issue from the [Lab 7 report](docs/Lab7_Usability_Test_Report.pdf) and what changed. Severity is on Nielsen's 0–4 scale.
-
-| # | Issue found in Lab 7 | Sev. | What we changed | Main files |
+| # | Issue found in testing | Sev. | What we changed | Main files |
 |---|---|---|---|---|
 | U2 | No "what is this / how to use it" at the start; users did not know a year can be clicked | 3 | A new **Help page** is the first screen: what GeoStory is, a screenshot with numbered arrows, the threads, shortcuts, and one **Enter** button. It reopens from **Help** at the top. A one-time hint points at the timeline. | `help.js`, `timeline.js` |
 | U1 | Users did not understand the five threads | 3 | The **Threads panel** shows the number of chapters in each thread. Hover or click a thread to list its chapters with dates, and click one to go there. The chapter you are reading is marked "You are here". | `threadsPanel.js` |
@@ -164,9 +152,9 @@ Smaller changes made along the way:
 
 - Hovering a linked chapter on the map says which chapter it is (asked for in the feedback form).
 - Pins can no longer hide under the left-hand panels in a window that is not maximised.
-- Three labels in the Journal and the full chronicle had low contrast (3.4:1). Lighthouse missed them in Lab 7 because those panels were closed during the audit. They now meet 4.5:1.
+- Three labels in the Journal and the full chronicle had low contrast (3.4:1). Lighthouse missed them because those panels were closed during the audit. They now meet 4.5:1.
 
-| Before (Lab 6): 200% zoom | After (Lab 8): 200% zoom |
+| Before: 200% zoom | After: 200% zoom |
 |---|---|
 | Threads panel gone, era card over the map, labels overlapping | ![GeoStory at 200% zoom](docs/screenshots/zoom-200.jpg) |
 
@@ -195,9 +183,9 @@ public/
     cosmos.js           deep-time sky scenes
     timeline.js         the time slider
     eraCard.js          era title panel
-    threadsPanel.js     the Threads panel and chapter lists      (new in Lab 8)
-    search.js           search box                               (new in Lab 8)
-    help.js             Help page and welcome screen             (new in Lab 8)
+    threadsPanel.js     the Threads panel and chapter lists      (new in v3.1)
+    search.js           search box                               (new in v3.1)
+    help.js             Help page and welcome screen             (new in v3.1)
     storyCard.js        story card
     reader.js           full chronicle view
     journal.js          saved stories, remove and undo
@@ -215,7 +203,7 @@ scripts/
   test-layout.mjs       screen test
   make-help-shot.mjs    retakes the Help page screenshot
   build-geo.mjs         one-time map data preparation
-docs/                   Lab reports and screenshots
+docs/                   test report and screenshots
 ```
 
 To add a story, add an object to `public/data/stories.js` with a `waypoint`, `thread`, `order`, `lat`, `lon` and `sources`, then run `npm run check`.
@@ -232,9 +220,9 @@ Checks that every pin is on land (using the same land shapes the map draws), eve
 npm run test:layout
 ```
 
-Opens the site in a headless browser at 8 sizes (common laptops, Windows scaling of 125% and 150%, a window that is not maximised, browser zoom of 200% and 250%, and a phone). At each size it performs both key tasks and checks each Lab 8 improvement: the Help page and its Enter button, readable timeline labels with no overlaps, the Threads panel never hidden, linked chapters on screen when a story is open, the chapter list, search, journal undo, named map buttons, no page scrolling and no JavaScript errors. It needs Playwright: `npm i -D playwright && npx playwright install chromium`.
+Opens the site in a headless browser at 8 sizes (common laptops, Windows scaling of 125% and 150%, a window that is not maximised, browser zoom of 200% and 250%, and a phone). At each size it performs both key tasks and checks each improvement: the Help page and its Enter button, readable timeline labels with no overlaps, the Threads panel never hidden, linked chapters on screen when a story is open, the chapter list, search, journal undo, named map buttons, no page scrolling and no JavaScript errors. It needs Playwright: `npm i -D playwright && npx playwright install chromium`.
 
-Tested by people too: see the [Lab 7 report](docs/Lab7_Usability_Test_Report.pdf).
+Tested by people too: see the [test report](docs/Lab7_Usability_Test_Report.pdf).
 
 ## Credits and licences
 
