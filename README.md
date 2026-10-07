@@ -1,145 +1,246 @@
 # GeoStory
 
-*A spatiotemporal journey through human history.* HCI & Visualization course project by Nikhil Varma (2024AIB1350) and Dhruva Kumar (2024EEB1196).
+**A spatiotemporal journey through human history.**
 
-You drag the timeline, pins appear on a historical world map, and each pin opens a short story. Stories are linked into **threads** that run across eras, so you can follow one idea through time.
+GeoStory is an interactive map of history that you can move through time. Drag the timeline from the Big Bang to today, and the map shows the world of that moment. Every pin opens a short, sourced story, and the stories are linked into five **threads** that you can follow across thousands of years.
 
----
+Course project for *HCI & Visualization*, IIT Ropar.
 
-## 1. Run it on your laptop (about 5 minutes)
+![GeoStory with a story open](docs/screenshots/story-open.jpg)
 
-**You need Node.js once.** Download the "LTS" version from https://nodejs.org and install it with the default options.
+## Contents
 
-1. Unzip `geostory-v3.zip` somewhere, for example your Desktop.
-2. Open a terminal **inside the `geostory-v3` folder**:
-   - Windows: open the folder in File Explorer, click the address bar, type `cmd`, press Enter.
-   - Mac: right-click the folder → *New Terminal at Folder*.
-3. Type this and press Enter:
-   ```
-   npm start
-   ```
-4. Open **http://localhost:5173** in your browser.
+- [Problem statement](#problem-statement)
+- [Objectives](#objectives)
+- [Team](#team)
+- [Technologies used](#technologies-used)
+- [Features](#features)
+- [Run it on your computer](#run-it-on-your-computer)
+- [Project progress](#project-progress)
+- [What we improved after user testing (Lab 8)](#what-we-improved-after-user-testing-lab-8)
+- [How the code is organised](#how-the-code-is-organised)
+- [Testing](#testing)
+- [Credits and licences](#credits-and-licences)
 
-There is nothing to install with npm: the project has no dependencies.
+## Problem statement
 
-To stop the server, press `Ctrl + C` in the terminal.
+People who are curious about history, but are not experts, have no simple way to see **what was happening, where, and when**, as a story.
 
-> Double-clicking `index.html` will **not** work (browsers block the code from loading that way). Always use `npm start`.
+Existing tools each show only part of the picture:
 
-## 2. Turn on "Ask the Chronicler" (Gemini)
+| Tool | What it does well | What is missing |
+|---|---|---|
+| Histography | Every event on one timeline | Time only: there is no map, and each event is a bare fact |
+| ORBIS | A detailed map of Roman travel | Space only: one fixed period, no movement through time |
+| Chronas | A map with a time slider | Data over narrative: clicking a region opens a raw Wikipedia article |
 
-1. Go to https://aistudio.google.com/app/apikey, sign in with a Google account and click **Create API key**. Copy it.
-2. In the `geostory-v3` folder, make a copy of `.env.example` and rename the copy to `.env`
-   (Windows: if you can't see the file, in File Explorer choose *View → Show → File name extensions*).
-3. Open `.env` in Notepad and paste your key after `GEMINI_API_KEY=` so it looks like:
-   ```
-   GEMINI_API_KEY=AIzaSy...your key...
-   ```
-4. Stop the server (`Ctrl + C`) and run `npm start` again. The terminal should say
-   `Ask the Chronicler: ON`.
+So a learner has to choose between a timeline without places, a map without time, or a time-map that reads like an encyclopedia. None of them connects one event to the next.
 
-**Keep the key private.** Don't put it in the slides or send `.env` to anyone. It is only read by the server; the browser never sees it.
+## Objectives
 
-If Google retires the default model, the Ask box will say "model wasn't found". Change `GEMINI_MODEL` in `.env` to a current model name from https://ai.google.dev/gemini-api/docs/models and restart.
+1. **Time and space together.** Let a user move through time and see the world change on one map.
+2. **Stories, not articles.** Tell history as short stories written from cited sources, in plain language.
+3. **Connected, not random.** Link stories into threads, so history reads as a journey and not as isolated facts.
+4. **Easy for a first-time user.** One screen, immediate feedback for every action, and little to remember.
+5. **Accessible.** Usable with the keyboard alone, labelled for screen readers, and readable at 200% browser zoom.
+6. **Worth coming back to.** Let users save stories, and ask follow-up questions that are answered only from the story's own text.
 
-## 3. Put it online (optional, for demoing from a link)
+The two key user tasks (defined in Lab 5) are:
 
-1. Create a free account at https://vercel.com (sign in with GitHub).
-2. Put this folder in a GitHub repository (GitHub Desktop is easiest). `.env` is already excluded by `.gitignore`, so your key won't be uploaded.
-3. In Vercel: **Add New → Project**, choose the repository, and click **Deploy**. No build settings are needed.
-4. In the Vercel project: **Settings → Environment Variables**, add `GEMINI_API_KEY` with your key, then **Deployments → Redeploy**.
+- **T1 – Navigate time to discover activity:** go to a period and find what was happening in a region.
+- **T2 – Explore a chronicle:** open a story and read its full narrative.
 
-Vercel gives you a link like `https://geostory-yourname.vercel.app`.
+## Team
 
----
-
-## What's in it
-
-| Feature | Where |
+| Name | Entry number |
 |---|---|
-| Timeline from the Big Bang to today, in 17 stops following the 8 "thresholds" of Big History (David Christian) | bottom of the screen; drag it, click a stop, use ← → keys, or the arrows on each side |
-| Deep time (Big Bang → first life) shown as animated sky scenes, because there is no map yet | stops 1–5 |
-| Real world map with **historical borders** for each era (empires and cultures of that time) | stops 6–17 |
-| Pins that drop in, glow, and fly the map to the story when clicked | map |
-| Story card: place, era, image, story, sources | slides in from the right |
-| **Threads**: dotted arcs link a story to its previous and next chapter; "Continue the thread" jumps there | story card, legend at bottom-left |
-| **Full chronicle** (Mansa Musa, 1324): six short chapters, pull quotes, a route map that follows the chapter you're reading, "Myth or fact?", "Then and now", sources | "Read the full chronicle" |
-| **Ask the Chronicler** (Gemini): answers only from the story's own text, says so when the story doesn't cover something | story card and chronicle |
-| **Listen**: reads the story aloud with the browser's built-in voice (free, no key) | story card and chronicle |
-| **Journal** (archive): saved stories grouped by thread, kept in the browser | header |
-| Shareable links: the address bar always points to the current era/story | URL |
+| Nikhil Varma | 2024AIB1350 |
+| Dhruva Kumar | 2024EEB1196 |
 
-Stories without a full chronicle show "Full chronicle (in construction)", on purpose not a button that does nothing.
+## Technologies used
 
-## Threads (how stories connect)
+| Area | Technology | Why |
+|---|---|---|
+| Structure and style | HTML5, CSS3 (grid, custom properties, media queries) | No framework needed for a one-screen app |
+| Behaviour | JavaScript (ES modules), no framework and no build step | Small, readable modules; runs as it is written |
+| Map | [D3.js](https://d3js.org) v7 (`geoNaturalEarth1` projection, zoom) and [TopoJSON](https://github.com/topojson/topojson-client) | Draws real historical borders as SVG, so pins and borders always move together |
+| Server | [Node.js](https://nodejs.org) built-in `http` module, **zero npm dependencies** | Serves the site and keeps the AI key private |
+| AI | Google Gemini API, called only from the server | "Ask the Chronicler" answers from the story's own text |
+| Read aloud | Web Speech API (built into the browser) | Free, no key |
+| Saved stories | `localStorage` | No account or database needed |
+| Map data | Natural Earth, historical-basemaps | Land shapes and borders for each era |
+| Testing | Playwright (development only) | Automated checks at 8 screen sizes |
+| Version control | Git and GitHub | |
+
+## Features
+
+| Feature | How to use it |
+|---|---|
+| **Timeline** from the Big Bang to today, 17 stops in the 8 "thresholds" of Big History | Drag the gold marker, click any year, use ← →, or the arrows at each end |
+| **Historical world map** with the borders of each era | Appears from 66 million years ago onwards; earlier stops are animated sky scenes |
+| **Pins**, one per story, in the colour of their thread | Click a pin |
+| **Story card** with place, date, picture, story and sources | Slides in from the right |
+| **Threads**: five storylines that connect stories across eras | *Continue the thread* on a story card, or open **Threads** (bottom left) and pick any chapter |
+| **Full chronicle** (Mansa Musa, 1324): six chapters, a route map that follows your reading, "Myth or fact?" | *Read the full chronicle* |
+| **Search** for a story, place, person or year | The box at the top, or press `/` |
+| **Journal**: saved stories, grouped by thread, with Undo when you remove one | *Save* on a story, then **Journal** at the top |
+| **Ask the Chronicler** (Gemini): answers only from the story's text | In every story card |
+| **Listen**: reads the story aloud | In every story card |
+| **Help**: what GeoStory is and how the screen works | The first screen, and **Help** at the top |
+| Shareable links | The address bar always points to the current year and story |
+
+Stories without a full chronicle say "Full chronicle (in construction)" on purpose, instead of a button that does nothing.
+
+### The five threads
 
 | Thread | Chapters |
 |---|---|
-| The human story | Chicxulub (66 m) → Jebel Irhoud (300 k) → Göbekli Tepe (9500 BCE) → Uruk (3000 BCE) |
-| Ideas that travel | Giza (3000 BCE) → Athens (500 BCE) → Baghdad (800) → Mainz (1500) → CERN (today) |
-| The Silk Roads | Persepolis (500 BCE) → Chang'an (1 CE) → Rome (1 CE) → Samarkand (800) → Khanbaliq (1300) → Calicut (1500) |
-| Gold and salt | Koumbi Saleh (800) → **Mansa Musa, Timbuktu (1300)** → Elmina (1500) → Johannesburg (1900) |
-| Engines of change | Manchester (1800) → Detroit (1900) → Shenzhen (today) |
+| The human story | Chicxulub (66 million years ago) → Jebel Irhoud (300,000 years ago) → Göbekli Tepe (9500 BCE) → Uruk (3000 BCE) |
+| Ideas that travel | Giza (3000 BCE) → Athens (500 BCE) → Baghdad (800 CE) → Mainz (1500 CE) → CERN (today) |
+| The Silk Roads | Persepolis (500 BCE) → Chang'an (1 CE) → Rome (1 CE) → Samarkand (800 CE) → Khanbaliq (1300 CE) → Calicut (1500 CE) |
+| Gold and salt | Koumbi Saleh (800 CE) → **Mansa Musa, Timbuktu (1300 CE)** → Elmina (1500 CE) → Johannesburg (1900 CE) |
+| Engines of change | Manchester (1800 CE) → Detroit (1900 CE) → Shenzhen (today) |
 
-The thread structure follows widely used world histories: Frankopan, *The Silk Roads* (2015); Gomez, *African Dominion* (2018); Christian, *Maps of Time* (2004). Each story lists its own sources.
+The threads follow widely used world histories: Frankopan, *The Silk Roads* (2015); Gomez, *African Dominion* (2018); Christian, *Maps of Time* (2004). Each story lists its own sources.
 
----
+## Run it on your computer
+
+You need [Node.js](https://nodejs.org) 18 or newer (the "LTS" download). Nothing else has to be installed.
+
+```
+git clone https://github.com/nikhil280607-oss/geostory.git
+cd geostory
+npm start
+```
+
+Then open **http://localhost:5173** in your browser. Press `Ctrl + C` in the terminal to stop.
+
+> Double-clicking `index.html` will not work, because browsers block JavaScript modules opened that way. Always use `npm start`.
+
+### Turn on "Ask the Chronicler" (optional)
+
+1. Create a free key at https://aistudio.google.com/app/apikey.
+2. Make a copy of `.env.example` and name the copy `.env`.
+3. In `.env`, paste the key after `GEMINI_API_KEY=`.
+4. Restart with `npm start`. The terminal should say `Ask the Chronicler: ON`.
+
+`.env` is listed in `.gitignore`, so the key is never uploaded to GitHub. The key is read only by the server; the browser never sees it. Without a key, everything else still works.
+
+### Put it online (optional)
+
+Import the repository into [Vercel](https://vercel.com), then add `GEMINI_API_KEY` under *Settings → Environment Variables* and redeploy. No build settings are needed.
+
+## Project progress
+
+| Lab | Stage | What we did |
+|---|---|---|
+| 4 | Define | Literature review, gaps in existing tools, proposed solution |
+| 5 | Design | Two key user tasks, clickable prototype, design rationale |
+| 6 | Build | First working build (v3.0): timeline, historical map, stories, threads, chronicle, journal, Ask the Chronicler |
+| 7 | Test | User testing with 5 people, heuristic evaluation, accessibility check ([report](docs/Lab7_Usability_Test_Report.pdf)) |
+| **8** | **Improve** | **This version (v3.1): all 9 improvements from the Lab 7 report, GitHub, documentation** |
+| 9 | Validate | Next |
+
+## What we improved after user testing (Lab 8)
+
+In Lab 7, all five users finished both tasks (SUS 79), but most did not understand what GeoStory offers, especially the threads. The table lists every issue from the [Lab 7 report](docs/Lab7_Usability_Test_Report.pdf) and what changed. Severity is on Nielsen's 0–4 scale.
+
+| # | Issue found in Lab 7 | Sev. | What we changed | Main files |
+|---|---|---|---|---|
+| U2 | No "what is this / how to use it" at the start; users did not know a year can be clicked | 3 | A new **Help page** is the first screen: what GeoStory is, a screenshot with numbered arrows, the threads, shortcuts, and one **Enter** button. It reopens from **Help** at the top. A one-time hint points at the timeline. | `help.js`, `timeline.js` |
+| U1 | Users did not understand the five threads | 3 | The **Threads panel** shows the number of chapters in each thread. Hover or click a thread to list its chapters with dates, and click one to go there. The chapter you are reading is marked "You are here". | `threadsPanel.js` |
+| H8 | With a story open, panels crowded the map and the linked chapter went off-screen | 3 | The era card shrinks to a small chip and Threads folds to a button. The map now frames the story's pin **and** its previous and next chapter together. | `map.js`, `app.css` |
+| A1 | At 200% zoom the Threads panel disappeared and the map shrank | 3 | Nothing is hidden any more: panels become a chip and a button, the timeline scrolls sideways instead of squeezing its labels, and the map moves closer instead of shrinking. | `app.css`, `map.js`, `timeline.js` |
+| U3 | Timeline years too small | 2 | Years are larger (14.5px, was 10.5px) and written on two lines. | `timeline.js`, `app.css` |
+| H2 | "66 m", "300 k", "13.8 bn" were unclear | 2 | Labels now read "66 million", "300,000 years ago", "13.8 billion". Hovering a stop shows the full date and title. | `waypoints.js`, `timeline.js` |
+| H1 | Pins were small and easy to miss | 2 | Pins are 30% larger, pulse, and have the place name under them. | `map.js`, `app.css` |
+| H6 | The globe icon was unclear; zoom buttons were not noticed | 2 | Larger map buttons with a new "reset" icon. Each shows its name ("Zoom in", "Zoom out", "Reset view") on hover and keyboard focus. | `main.js`, `app.css` |
+| H3 | A removed story could not be brought back | 2 | "Removed … **Undo**" appears for 7 seconds. | `journal.js` |
+| H4 | The same × closed the panel and removed a story | 2 | Removing now uses a bin icon; × only closes. | `journal.js` |
+| H5 | Removing happened instantly with no check | 2 | Solved by Undo. We chose undo over an "Are you sure?" box because removing a bookmark is a small action. | `journal.js` |
+| H7 | No search | 2 | A **search box** finds stories, places, people and years, and jumps straight there. | `search.js` |
+
+Smaller changes made along the way:
+
+- Hovering a linked chapter on the map says which chapter it is (asked for in the feedback form).
+- Pins can no longer hide under the left-hand panels in a window that is not maximised.
+- Three labels in the Journal and the full chronicle had low contrast (3.4:1). Lighthouse missed them in Lab 7 because those panels were closed during the audit. They now meet 4.5:1.
+
+| Before (Lab 6): 200% zoom | After (Lab 8): 200% zoom |
+|---|---|
+| Threads panel gone, era card over the map, labels overlapping | ![GeoStory at 200% zoom](docs/screenshots/zoom-200.jpg) |
+
+More screenshots: [the map](docs/screenshots/map-1300.jpg), [a thread's chapters](docs/screenshots/threads.jpg), [the Help page](docs/screenshots/help.jpg).
+
+**Still to do (content, later labs):** more stories and pictures, Indian history, narration in more languages, and checking the borders of each period.
 
 ## How the code is organised
 
+Every action follows one path: **user action → `store.set()` → `render()`**. Modules do not call each other, which keeps them independent and easy to test.
+
 ```
-server.js              local web server + /api endpoints (no dependencies)
-lib/chronicler.js      Ask the Chronicler: builds the story context, calls Gemini (server only)
-api/                   the same endpoints for Vercel
+server.js               local web server and the /api endpoints (no dependencies)
+lib/chronicler.js       Ask the Chronicler: builds the story context, calls Gemini (server only)
+api/                    the same endpoints for Vercel
 public/
   index.html
-  css/                 base (tokens, fonts), app (layout, map, timeline), story, reader, panels
+  css/                  base (colours, fonts) · app (layout, map, timeline) · story · reader · panels
   js/
-    main.js            starts the app; user action → store → render
-    store.js           single app state { eraIndex, storyId, readerOpen, journalOpen }
-    content.js         lookups over the data files
-    map.js             world map, historical borders, pins, thread arcs, zoom
-    geoData.js         loads and caches map files
-    geoClean.js        repairs border shapes before drawing
-    cosmos.js          deep-time sky scenes
-    timeline.js        the time slider (keyboard and screen-reader friendly)
-    eraCard.js         era title panel
-    storyCard.js       story card
-    reader.js          full chronicle view
-    journal.js         saved stories
-    askBox.js          Ask the Chronicler UI
-    narrator.js        read aloud
+    main.js             starts the app and connects the modules
+    store.js            the single app state { eraIndex, storyId, readerOpen, journalOpen }
+    content.js          lookups over the data files
+    map.js              world map, borders, pins, thread links, camera
+    geoData.js          loads and caches map files
+    geoClean.js         repairs border shapes before drawing
+    cosmos.js           deep-time sky scenes
+    timeline.js         the time slider
+    eraCard.js          era title panel
+    threadsPanel.js     the Threads panel and chapter lists      (new in Lab 8)
+    search.js           search box                               (new in Lab 8)
+    help.js             Help page and welcome screen             (new in Lab 8)
+    storyCard.js        story card
+    reader.js           full chronicle view
+    journal.js          saved stories, remove and undo
+    askBox.js           Ask the Chronicler (browser side)
+    narrator.js         read aloud
+    util.js             small helpers, icons, layout rules
   data/
-    waypoints.js       the 17 timeline stops
-    threads.js         the 5 threads
-    stories.js         22 stories with coordinates and sources
-    chronicles/        full chronicles (Mansa Musa)
-    geo/               simplified map files (made by scripts/build-geo.mjs)
+    waypoints.js        the 17 timeline stops
+    threads.js          the 5 threads
+    stories.js          22 stories with coordinates and sources
+    chronicles/         full chronicles (Mansa Musa)
+    geo/                simplified map files
 scripts/
-  check-content.mjs    automated content test
-  test-layout.mjs      automated screen-size test
-  build-geo.mjs        one-time map data preparation
+  check-content.mjs     content test
+  test-layout.mjs       screen test
+  make-help-shot.mjs    retakes the Help page screenshot
+  build-geo.mjs         one-time map data preparation
+docs/                   Lab reports and screenshots
 ```
 
-To add a story: add an object to `public/data/stories.js` with a `waypoint`, `thread`, `order`, `lat`/`lon` and `sources`, then run `npm run check`.
+To add a story, add an object to `public/data/stories.js` with a `waypoint`, `thread`, `order`, `lat`, `lon` and `sources`, then run `npm run check`.
 
 ## Testing
 
-- `npm run check` checks that **every pin is on land** (using the same land shapes the map draws), every border map draws correctly, threads are numbered without gaps, and every story has sources. This test exists because v2 had pins in the ocean.
-- `npm run test:layout` opens the site in a headless browser at 1366×768, 1920×1080 at 125% and 150% Windows scaling, 1920 and a phone, and checks there is **no scrolling**, **no story card before a pin is clicked**, all pins are inside the map, the thread and chronicle flows work, and there are no JavaScript errors. It saves screenshots to `test-output/`. It needs Playwright (`npm i -D playwright && npx playwright install chromium`).
+```
+npm run check
+```
 
-## What v3 fixed from v2
+Checks that every pin is on land (using the same land shapes the map draws), every border map draws correctly, threads are numbered without gaps, and every story has sources.
 
-| v2 problem | Cause | Fix |
-|---|---|---|
-| Pins in the ocean or off the map | Pins were positioned as % of the screen, but the map kept its own shape and was centred, so they drifted apart | Pins are drawn inside the map's SVG with the same projection as the borders, so they move together; `npm run check` verifies every pin is on land |
-| Empty story card visible, sideways scrolling | The hidden card was pushed off-screen to the right and widened the page | The page can't scroll; the card only exists after a pin is clicked |
-| Vertical scrolling at 125–150% scaling | Fixed pixel heights for header/map/timeline | A flexible one-screen grid, plus compact styles for short screens; tested at those scalings |
+```
+npm run test:layout
+```
+
+Opens the site in a headless browser at 8 sizes (common laptops, Windows scaling of 125% and 150%, a window that is not maximised, browser zoom of 200% and 250%, and a phone). At each size it performs both key tasks and checks each Lab 8 improvement: the Help page and its Enter button, readable timeline labels with no overlaps, the Threads panel never hidden, linked chapters on screen when a story is open, the chapter list, search, journal undo, named map buttons, no page scrolling and no JavaScript errors. It needs Playwright: `npm i -D playwright && npx playwright install chromium`.
+
+Tested by people too: see the [Lab 7 report](docs/Lab7_Usability_Test_Report.pdf).
 
 ## Credits and licences
 
-- Map land: Natural Earth (public domain).
-- Historical borders: [historical-basemaps](https://github.com/aourednik/historical-basemaps) by André Ourednik and contributors (GPL-3.0). Borders are approximate.
-- Map rendering: D3 (ISC) and topojson-client (ISC), included in `public/vendor`.
+- Map land: [Natural Earth](https://www.naturalearthdata.com) (public domain).
+- Historical borders: [historical-basemaps](https://github.com/aourednik/historical-basemaps) by André Ourednik and contributors, licensed GPL-3.0. The files in `public/data/geo/` are simplified copies and stay under that licence (see `public/data/geo/LICENSE-historical-basemaps.txt`). Borders are approximate.
+- Map drawing: D3 (ISC) and topojson-client (ISC), included in `public/vendor`.
 - Fonts: Cormorant Garamond, Spectral and Manrope (SIL Open Font Licence), in `public/fonts`.
-- Images: Wikimedia Commons, credited under each image and loaded from Wikimedia (needs internet; if an image can't load, it's hidden).
+- Pictures: Wikimedia Commons, credited under each picture.
+- Timeline structure: David Christian, *Maps of Time* (2004), and the Big History Project.
