@@ -1,6 +1,6 @@
 {
   "name": "geostory",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "GeoStory: a spatiotemporal journey through human history (HCI & Visualization course project)",
   "type": "module",
   "private": true,

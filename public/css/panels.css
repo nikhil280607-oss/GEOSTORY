@@ -14,7 +14,7 @@
 .journal.is-open .jr-scrim { opacity: 1; }
 .journal.is-open .jr-panel { transform: none; }
 .jr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.jr-kicker { font: 800 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-deep); }
+.jr-kicker { font: 800 10.5px var(--ui); letter-spacing: 0.16em; text-transform: uppercase; color: #7a5a1c; }
 .jr-title { font: 600 34px/1.05 var(--display); color: #1f1810; }
 .jr-panel .icon-btn { background: rgba(255, 255, 255, 0.5); border-color: var(--sepia-line); color: var(--ink-text); }
 .jr-group { border-top: 1px solid var(--sepia-line); padding-top: 12px; }
@@ -35,42 +35,128 @@
 .jr-empty-title { font: 600 24px var(--display); color: #1f1810; }
 .jr-foot { margin-top: auto; font: 500 12px var(--ui); color: var(--ink-text-2); text-align: center; padding-top: 10px; }
 
-/* ---------------- Welcome ---------------- */
+/* remove (bin icon) and the Undo message (Lab 7: H3, H4, H5) */
+.jr-remove:hover { border-color: #a5412f !important; color: #a5412f !important; background: rgba(165, 65, 47, 0.08) !important; }
+.jr-undo {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 10px 12px 14px; border-radius: 12px;
+  background: var(--ink-700); color: var(--text); font: 500 13.5px/1.35 var(--ui);
+  animation: fade-up 0.3s var(--ease-out);
+}
+.jr-undo-text { flex: 1; min-width: 0; }
+.jr-undo-text strong { color: var(--parchment); font-weight: 700; }
+.jr-undo-btn { background: var(--gold-bright); color: #1b1308; padding: 7px 13px; flex: none; }
+.jr-undo-btn:hover { background: #f0d48a; }
+.jr-undo-btn .icon svg { width: 16px; height: 16px; }
+/* a thin bar that runs out as the time to undo runs out */
+.jr-undo-timer {
+  position: absolute; left: 0; bottom: 0; height: 3px; width: 100%;
+  background: var(--gold); transform-origin: left; animation: run-out linear forwards;
+}
+@keyframes run-out { to { transform: scaleX(0); } }
+
+/* ---------------- Help page (also the welcome screen) ---------------- */
 .intro {
-  position: fixed; inset: 0; z-index: 60; overflow-y: auto;
-  display: grid; place-items: center; padding: 24px;
-  background:
-    radial-gradient(ellipse at 50% 40%, rgba(20, 37, 61, 0.78), rgba(5, 10, 18, 0.96) 70%);
-  backdrop-filter: blur(3px);
+  position: fixed; inset: 0; z-index: 60;
+  background: radial-gradient(ellipse at 50% 0%, #17294a 0%, var(--ink-900) 55%, var(--ink-950) 100%);
   opacity: 0; transition: opacity 0.4s ease;
 }
 .intro.is-open { opacity: 1; }
-.intro-card {
-  max-width: 600px; text-align: center; color: var(--text);
-  transform: translateY(12px); transition: transform 0.6s var(--ease-out);
-}
-.intro.is-open .intro-card { transform: none; }
-.intro-logo { width: 64px; height: 64px; margin: 0 auto 14px; display: block; }
-.intro-kicker { font: 800 11px var(--ui); letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
-.intro-title { font: 600 clamp(58px, 9vw, 96px)/0.95 var(--display); color: var(--parchment); margin: 10px 0 14px; letter-spacing: 0.005em; }
-.intro-lede { font: 400 clamp(16px, 1.6vw, 19px)/1.6 var(--read); color: var(--text-2); max-width: 32em; margin: 0 auto; }
-.intro-steps {
-  list-style: none; padding: 0; margin: 24px auto 26px;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 560px;
-}
-.intro-steps li {
-  padding: 12px 12px; border-radius: 12px; border: 1px solid var(--line);
-  background: rgba(11, 20, 34, 0.6); font: 500 13px/1.45 var(--ui); color: var(--text-2);
-}
-.intro-steps strong { display: block; font: 600 20px var(--display); color: var(--gold-bright); margin-bottom: 2px; }
-.intro-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.intro-actions .btn { padding: 12px 20px; font-size: 14px; }
-.intro-foot { font: 500 12px var(--ui); color: var(--text-3); margin-top: 18px; }
+.help { height: 100%; display: flex; flex-direction: column; color: var(--text); }
+.help-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.help-scroll:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: -3px; border-radius: 0; }
+.help-col { max-width: 1080px; margin: 0 auto; padding: clamp(18px, 3.2vh, 36px) 24px 28px; display: grid; gap: clamp(22px, 3.4vh, 38px); }
 
-@media (max-width: 640px) {
-  .intro-steps { grid-template-columns: 1fr; }
+.help-hero { display: grid; grid-template-columns: auto minmax(0, 0.8fr) minmax(0, 1.5fr); gap: 8px 22px; align-items: center; }
+.help-logo { width: 56px; height: 56px; }
+.help-kicker { font: 800 11px var(--ui); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+.help-title { font: 600 clamp(44px, 6vw, 68px)/0.95 var(--display); color: var(--parchment); margin: 4px 0 4px; }
+.help-tag { font: italic 500 19px/1.3 var(--display); color: var(--gold-bright); }
+.help-what { border-left: 1px solid var(--line); padding-left: 22px; }
+.help-what p { font: 400 16px/1.6 var(--read); color: var(--text-2); }
+.help-what p + p { margin-top: 8px; }
+.help-what strong { color: var(--gold-bright); font-weight: 600; }
+
+.help-h2 { font: 600 28px/1.1 var(--display); color: var(--parchment); margin-bottom: 10px; }
+.help-what .help-h2 { font-size: 23px; margin-bottom: 6px; }
+.help-h3 { font: 800 11.5px var(--ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin: 18px 0 8px; }
+.help-p { font: 400 15.5px/1.6 var(--read); color: var(--text-2); max-width: 62em; }
+
+/* the screenshot with numbered arrows */
+.help-screen { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(250px, 1fr); gap: 22px; align-items: start; }
+.help-shot-frame {
+  position: relative; border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(226, 191, 106, 0.4); box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
 }
-@media (max-height: 640px) {
-  .intro-logo { width: 48px; height: 48px; margin-bottom: 8px; }
-  .intro-steps { margin: 16px auto 18px; }
+.help-shot-frame img { display: block; width: 100%; height: auto; }
+.help-arrows { position: absolute; inset: 0; }
+.help-arrows svg { width: 100%; height: 100%; display: block; }
+.help-arrows line { stroke: #ffd766; stroke-width: 3.5; stroke-linecap: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)); }
+.help-arrows marker path { fill: #ffd766; }
+.help-tag-on-shot {
+  position: absolute; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 7px; padding: 3px 11px 3px 3px; border-radius: 999px;
+  background: #ffd766; color: #1b1308; font: 800 12.5px/1 var(--ui); white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+}
+.help-tag-on-shot b, .help-num {
+  width: 22px; height: 22px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  background: #1b1308; color: #ffd766; font: 800 12.5px/1 var(--ui);
+}
+.help-shot-cap { font: 500 12px/1.4 var(--ui); color: var(--text-3); margin-top: 8px; }
+.help-parts { list-style: none; padding: 0; display: grid; gap: 11px; }
+.help-parts li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 11px; align-items: start; }
+.help-num { background: #ffd766; color: #1b1308; margin-top: 1px; }
+.help-parts strong { display: block; font: 700 14.5px/1.3 var(--ui); color: var(--text); }
+.help-parts span { display: block; font: 500 13.5px/1.5 var(--ui); color: var(--text-2); }
+
+/* the five threads */
+.help-threads { list-style: none; padding: 0; margin-top: 14px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.help-thread {
+  padding: 12px 12px 13px; border-radius: 12px; border: 1px solid var(--line);
+  border-top: 3px solid var(--thread); background: rgba(11, 20, 34, 0.6);
+}
+.help-thread-name { display: flex; align-items: center; gap: 9px; font: 600 19px/1.15 var(--display); color: var(--parchment); }
+.help-thread-meta { font: 700 11px/1.4 var(--ui); color: var(--thread); margin: 6px 0 5px; }
+.help-thread-blurb { font: 500 12.5px/1.5 var(--ui); color: var(--text-2); }
+.help-ways { padding-left: 22px; display: grid; gap: 6px; font: 400 15px/1.55 var(--read); color: var(--text-2); max-width: 62em; }
+.help-ways strong { color: var(--text); font: 700 14px var(--ui); }
+.help-ways em { font-style: normal; color: var(--gold-bright); font-weight: 600; font-family: var(--ui); font-size: 0.92em; }
+.help-ways li::marker { color: var(--gold); font: 800 13px var(--ui); }
+
+.help-shortcuts { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 26px; font: 500 14px/1.4 var(--ui); color: var(--text-2); }
+.help-shortcuts li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.help-keys { display: inline-flex; gap: 4px; }
+.help-keys kbd { font-size: 12px; padding: 5px 8px; color: var(--text); }
+.help-foot { font: 500 12.5px/1.5 var(--ui); color: var(--text-3); margin-top: 14px; }
+
+/* the bar with the Enter button stays in view, however long the page is */
+.help-bar {
+  flex: none; display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap;
+  padding: 12px 20px; border-top: 1px solid var(--line);
+  background: rgba(7, 13, 23, 0.92); backdrop-filter: blur(6px);
+}
+.help-bar-note { font: 500 13px/1.4 var(--ui); color: var(--text-2); }
+.help-enter { padding: 13px 26px; font-size: 15.5px; font-weight: 800; box-shadow: 0 0 0 4px rgba(226, 191, 106, 0.18); }
+
+@media (max-width: 980px) {
+  .help-hero { grid-template-columns: auto minmax(0, 1fr); }
+  .help-what { grid-column: 1 / -1; border-left: 0; padding-left: 0; }
+  .help-screen { grid-template-columns: 1fr; }
+  .help-parts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; }
+  .help-threads { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+}
+@media (max-width: 640px) {
+  .help-col { padding: 16px 16px 22px; }
+  .help-logo { width: 44px; height: 44px; }
+  .help-parts, .help-shortcuts { grid-template-columns: 1fr; }
+  .help-tag-on-shot { padding: 2px; }
+  .help-tag-on-shot span { display: none; } /* numbers only: the names are in the list below */
+  .help-bar { padding: 10px 14px; gap: 8px; }
+  .help-bar-note { display: none; }
+}
+@media (max-height: 560px) {
+  .help-bar { padding: 7px 14px; }
+  .help-enter { padding: 10px 22px; }
 }

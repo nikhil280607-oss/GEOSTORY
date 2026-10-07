@@ -48,7 +48,7 @@
   justify-content: center; padding: 52px 24px 90px;
 }
 .rd-chapter { margin-bottom: 46px; scroll-margin-top: 20px; }
-.rd-numeral { font: 700 13px var(--display); letter-spacing: 0.35em; color: var(--gold-deep); }
+.rd-numeral { font: 700 13px var(--display); letter-spacing: 0.35em; color: #7a5a1c; } /* darker gold: 4.5:1 on paper */
 .rd-h2 { font: 600 34px/1.1 var(--display); color: #1f1810; margin: 6px 0 16px; }
 .rd-p { font: 400 18px/1.78 var(--read); color: #2f2618; margin-bottom: 1.05em; }
 .rd-dropcap::first-letter {
@@ -82,7 +82,7 @@
 .rd-tn { border-radius: 12px; padding: 16px 18px; font: 400 15.5px/1.6 var(--read); }
 .rd-tn:first-child { background: #ece0c2; }
 .rd-tn:last-child { background: var(--ink-700); color: var(--text); }
-.rd-tn-label { font: 700 13px var(--display); letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 6px; }
+.rd-tn-label { font: 700 13px var(--display); letter-spacing: 0.3em; text-transform: uppercase; color: #6b4d12; margin-bottom: 6px; }
 .rd-tn:last-child .rd-tn-label { color: var(--gold-bright); }
 
 .rd-block .ask { margin-top: 0; }

@@ -8,6 +8,13 @@
  * Stops are spaced by meaning, not by years: giant jumps through deep time,
  * then shorter steps once there are people and places to talk about.
  *
+ * Each stop has four ways to write its date:
+ *   num + unit -> the two-line label under the stop ("66" over "million")
+ *   tick       -> one short line, for the arrow buttons ("66 million")
+ *   short      -> a full short form, for tooltips and map labels ("66 million years ago")
+ *   label      -> the heading on the era card
+ * (Lab 7 found that the old "66 m" / "300 k" labels were unclear.)
+ *
  * kind: "cosmos" -> no geography yet, shown as a sky scene
  *       "map"    -> world map; `borders` names the historical border snapshot
  *                   in public/data/geo/borders-<borders>.json (null = land only)
@@ -27,90 +34,107 @@ export const CHAPTERS = [
 export const WAYPOINTS = [
   {
     id: "big-bang", chapter: "bang", kind: "cosmos", scene: "bang",
-    tick: "13.8 bn", label: "13.8 billion years ago", title: "The Big Bang",
+    num: "13.8", unit: "billion", tick: "13.8 billion", short: "13.8 billion years ago",
+    label: "13.8 billion years ago", title: "The Big Bang",
     text: "Space, time and energy begin in an event far hotter and denser than anything since. For about 380,000 years the universe is a glowing fog. Then it cools enough to turn transparent, and that first light still reaches us today as a faint microwave glow.",
   },
   {
     id: "first-stars", chapter: "stars", kind: "cosmos", scene: "stars",
-    tick: "13.6 bn", label: "About 13.6 billion years ago", title: "The first stars ignite",
+    num: "13.6", unit: "billion", tick: "13.6 billion", short: "13.6 billion years ago",
+    label: "About 13.6 billion years ago", title: "The first stars ignite",
     text: "Gravity pulls clouds of hydrogen and helium together until their cores grow hot enough to fuse. The first stars were probably huge and short-lived, lighting up a universe that had been dark for around a hundred million years.",
   },
   {
     id: "elements", chapter: "elements", kind: "cosmos", scene: "elements",
-    tick: "13 bn →", label: "From about 13 billion years ago", title: "Stars forge the elements",
+    num: "13", unit: "billion", tick: "13 billion", short: "13 billion years ago",
+    label: "From about 13 billion years ago", title: "Stars forge the elements",
     text: "Inside stars, light elements fuse into heavier ones. When the biggest stars die in supernova explosions, they scatter carbon, oxygen, calcium and iron into space. The calcium in your bones and the iron in your blood were made this way.",
   },
   {
     id: "earth", chapter: "earth", kind: "cosmos", scene: "earth",
-    tick: "4.5 bn", label: "4.5 billion years ago", title: "The Sun and Earth form",
+    num: "4.5", unit: "billion", tick: "4.5 billion", short: "4.5 billion years ago",
+    label: "4.5 billion years ago", title: "The Sun and Earth form",
     text: "A cloud of gas and dust, enriched by generations of dead stars, collapses into the Sun. Leftover debris clumps into planets. The young Earth is a molten ball, battered by impacts, and one giant collision is thought to have created the Moon.",
   },
   {
     id: "first-life", chapter: "life", kind: "cosmos", scene: "life",
-    tick: "3.8 bn", label: "About 3.8 billion years ago", title: "Life begins",
+    num: "3.8", unit: "billion", tick: "3.8 billion", short: "3.8 billion years ago",
+    label: "About 3.8 billion years ago", title: "Life begins",
     text: "Once Earth has cooled and gathered oceans, the first single-celled life appears, possibly around hot vents on the sea floor. The oldest evidence is still debated. For roughly the next three billion years, almost all life stays microscopic.",
   },
   {
     id: "66mya", chapter: "life", kind: "map", borders: null,
-    tick: "66 m", label: "66 million years ago", title: "The dinosaurs' last day",
+    num: "66", unit: "million", tick: "66 million", short: "66 million years ago",
+    label: "66 million years ago", title: "The dinosaurs' last day",
     intro: "An asteroid ends the age of dinosaurs and clears the way for mammals.",
     mapNote: "Modern coastlines shown. The continents sat in slightly different places then.",
   },
   {
     id: "300kya", chapter: "humans", kind: "map", borders: null,
-    tick: "300 k", label: "300,000 years ago", title: "Our species appears",
+    num: "300,000", unit: "years ago", tick: "300,000 yrs", short: "300,000 years ago",
+    label: "300,000 years ago", title: "Our species appears",
     intro: "The oldest known Homo sapiens are living in Africa.",
     mapNote: "Modern coastlines shown. Sea levels changed many times since.",
   },
   {
     id: "9500bce", chapter: "farming", kind: "map", borders: "bc10000",
-    tick: "9500 BCE", label: "Around 9500 BCE", title: "The first farmers",
+    num: "9500", unit: "BCE", tick: "9500 BCE", short: "9500 BCE",
+    label: "Around 9500 BCE", title: "The first farmers",
     intro: "After the last Ice Age, people in a few regions begin to plant, herd and settle.",
     mapNote: "Borders show cultures and ways of life, not countries.",
   },
   {
     id: "3000bce", chapter: "farming", kind: "map", borders: "bc3000",
-    tick: "3000 BCE", label: "3000 BCE", title: "Cities and writing",
+    num: "3000", unit: "BCE", tick: "3000 BCE", short: "3000 BCE",
+    label: "3000 BCE", title: "Cities and writing",
     intro: "Along great rivers, the first cities rise and writing is invented to run them.",
   },
   {
     id: "500bce", chapter: "farming", kind: "map", borders: "bc500",
-    tick: "500 BCE", label: "500 BCE", title: "Empires and ideas",
+    num: "500", unit: "BCE", tick: "500 BCE", short: "500 BCE",
+    label: "500 BCE", title: "Empires and ideas",
     intro: "Vast empires build roads while thinkers argue about how people should live.",
   },
   {
     id: "1ce", chapter: "farming", kind: "map", borders: "bc1",
-    tick: "1 CE", label: "Around 1 CE", title: "Rome and Han",
+    num: "1", unit: "CE", tick: "1 CE", short: "1 CE",
+    label: "Around 1 CE", title: "Rome and Han",
     intro: "Two giant empires sit at opposite ends of Eurasia, linked by long trade routes.",
   },
   {
     id: "800ce", chapter: "farming", kind: "map", borders: "800",
-    tick: "800", label: "800 CE", title: "Crossroads of the world",
+    num: "800", unit: "CE", tick: "800 CE", short: "800 CE",
+    label: "800 CE", title: "Crossroads of the world",
     intro: "Baghdad, Chang'an and West Africa's gold kingdoms tie the old world together.",
   },
   {
     id: "1300ce", chapter: "farming", kind: "map", borders: "1300",
-    tick: "1300", label: "1300 CE", title: "The age of great journeys",
+    num: "1300", unit: "CE", tick: "1300 CE", short: "1300 CE",
+    label: "1300 CE", title: "The age of great journeys",
     intro: "Mongol rule opens Asia, and Mali's gold becomes famous across three continents.",
   },
   {
     id: "1500ce", chapter: "farming", kind: "map", borders: "1500",
-    tick: "1500", label: "1500 CE", title: "The oceans open",
+    num: "1500", unit: "CE", tick: "1500 CE", short: "1500 CE",
+    label: "1500 CE", title: "The oceans open",
     intro: "Printed books spread ideas, and ships begin to link every coast on Earth.",
   },
   {
     id: "1800ce", chapter: "modern", kind: "map", borders: "1800",
-    tick: "1800", label: "1800 CE", title: "Machines arrive",
+    num: "1800", unit: "CE", tick: "1800 CE", short: "1800 CE",
+    label: "1800 CE", title: "Machines arrive",
     intro: "Steam and factories begin the biggest change in how humans live since farming.",
   },
   {
     id: "1900ce", chapter: "modern", kind: "map", borders: "1900",
-    tick: "1900", label: "1900 CE", title: "An industrial world",
+    num: "1900", unit: "CE", tick: "1900 CE", short: "1900 CE",
+    label: "1900 CE", title: "An industrial world",
     intro: "Railways, steamships and mass production reach almost everywhere.",
   },
   {
     id: "today", chapter: "modern", kind: "map", borders: "2010",
-    tick: "Today", label: "Today", title: "A connected planet",
+    num: "Today", unit: "", tick: "Today", short: "Today",
+    label: "Today", title: "A connected planet",
     intro: "Eight billion people, linked by a single global network.",
   },
 ];

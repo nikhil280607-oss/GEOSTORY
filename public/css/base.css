@@ -60,6 +60,8 @@ p, h1, h2, h3, figure, ol, ul, blockquote { margin: 0; }
 button { font: inherit; color: inherit; }
 a { color: inherit; }
 [hidden] { display: none !important; }
+/* for screen readers only (e.g. "3 results" after a search) */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 :focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; border-radius: 6px; }
 
@@ -119,7 +121,7 @@ a { color: inherit; }
 
 /* Cormorant's old-style figures read oddly in dates ("1300"); use lining figures. */
 .era-label, .era-title, .era-cosmos-title, .sc-title, .sc-next-title, .rd-title, .rd-h2, .rd-aside-title,
-.rd-minimap-caption, .jr-item-title, .intro-title, .map-tooltip strong, .rd-bar-title, .sc-bridge, .rd-pull {
+.rd-minimap-caption, .jr-item-title, .help-title, .help-h2, .map-tooltip strong, .rd-bar-title, .sc-bridge, .rd-pull {
   font-variant-numeric: lining-nums;
 }
 

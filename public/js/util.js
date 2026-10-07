@@ -29,6 +29,25 @@ export function el(tag, attrs = {}, ...children) {
 export const prefersReducedMotion = () =>
   window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/**
+ * Layout modes. The same two rules are used in the CSS (see "small windows"
+ * in app.css), so the code and the styles always agree.
+ *
+ *   compact -> a small window, or a normal window at a browser zoom of ~175%
+ *              and above: panels shrink to chips and buttons.
+ *   sheet   -> narrow AND tall (a phone held upright): the story card comes
+ *              up from the bottom instead of sliding in from the right.
+ */
+export const LAYOUT = {
+  compact: window.matchMedia("(max-width: 900px), (max-height: 560px)"),
+  sheet: window.matchMedia("(max-width: 900px) and (max-aspect-ratio: 5/4)"),
+};
+export const isCompact = () => LAYOUT.compact.matches;
+export const isSheet = () => LAYOUT.sheet.matches;
+
+/** Lower-case and strip accents, so "Gobekli" finds "Göbekli". */
+export const fold = (text) => String(text).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 /** localStorage that never throws (private windows, blocked storage, etc.). */
 export const safeStorage = {
   get(key, fallback) {
@@ -66,6 +85,15 @@ export const ICONS = {
   send: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12l15-7-5 15-2.5-6.5z"/></svg>',
   thread: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="17" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="19" cy="15" r="2"/><path d="M6.4 15.6l4.2-6.2M13.6 9.2l4 4.6" stroke-dasharray="2 2.2"/></svg>',
   keyboard: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6.5" width="18" height="11" rx="2"/><path d="M7 10.5h.01M10 10.5h.01M13 10.5h.01M16 10.5h.01M8 14h8"/></svg>',
+  help: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.5-1.2 1-1.2 1.9M12 16.6h.01"/></svg>',
+  search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2h9.2L17.5 7M10 10.5v5.5M14 10.5v5.5"/></svg>',
+  undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5L4 9l4 4"/><path d="M4 9h10a5.5 5.5 0 0 1 0 11h-3"/></svg>',
+  // "Reset view": four corners closing in on the centre (the old globe icon was unclear).
+  reset: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4.5h4.5M20 9V4.5h-4.5M4 15v4.5h4.5M20 15v4.5h-4.5"/><circle cx="12" cy="12" r="2.4"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  chevronUp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>',
+  chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>',
 };
 
 export function icon(name, cls = "icon") {

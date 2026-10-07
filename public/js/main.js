@@ -5,16 +5,15 @@
  * talks to anything else directly, which keeps the modules independent.
  *
  *   Timeline ─┐                    ┌─> MapView / CosmosView
- *   Map pins ─┼─> store.set() ─────┼─> EraCard
- *   Card nav ─┤                    ├─> StoryCard / Reader
- *   Journal  ─┘                    └─> URL (#era=...&story=...)
+ *   Map pins ─┤                    ├─> EraCard
+ *   Card nav ─┼─> store.set() ─────┼─> StoryCard / Reader
+ *   Threads  ─┤                    ├─> ThreadsPanel
+ *   Search   ─┤                    └─> URL (#era=...&story=...)
+ *   Journal  ─┘
  */
 
 import { store } from "./store.js";
-import {
-  WAYPOINTS, THREADS, THREAD_ORDER, FIRST_MAP_INDEX,
-  getEra, getEraIndex, getStory, storiesForEra, threadNeighbours, threadStories,
-} from "./content.js";
+import { WAYPOINTS, getEra, getEraIndex, getStory, storiesForEra, threadNeighbours } from "./content.js";
 import { MapView } from "./map.js";
 import { CosmosView } from "./cosmos.js";
 import { Timeline } from "./timeline.js";
@@ -24,9 +23,13 @@ import { Reader } from "./reader.js";
 import { journal, JournalPanel } from "./journal.js";
 import { narrator } from "./narrator.js";
 import { checkAi } from "./askBox.js";
-import { $, el, icon } from "./util.js";
+import { ThreadsPanel } from "./threadsPanel.js";
+import { SearchBox } from "./search.js";
+import { HelpPage } from "./help.js";
+import { $, el, icon, isCompact } from "./util.js";
 
 const stage = $("#stage");
+const eraCardEl = $("#era-card");
 
 /* ------------------------------------------------------------------ actions */
 
@@ -51,7 +54,11 @@ const mapView = new MapView($("#map"), {
   onPinClick: goToStory,
   onGhostClick: goToStory,
   getCardWidth: () => storyCard.width(),
-  getLeftReserve: () => (window.innerWidth >= 900 ? 390 : 0),
+  // On big screens the world slides right to clear the era card. In small
+  // windows the era card is only a small chip, so nothing needs to move.
+  getLeftReserve: () => (isCompact() ? 0 : 390),
+  // When the era card is a chip along the top, pins are framed below it.
+  getTopReserve: () => (isCompact() || stage.classList.contains("has-story") ? eraCardEl.offsetHeight + 22 : 0),
 });
 const cosmos = new CosmosView($("#cosmos"));
 const timeline = new Timeline($("#timeline"), { onChange: goToEra });
@@ -68,6 +75,20 @@ const reader = new Reader($("#reader"), {
 const journalPanel = new JournalPanel($("#journal"), {
   onOpenStory: goToStory,
   onClose: () => store.set({ journalOpen: false }),
+});
+const threadsPanel = new ThreadsPanel($("#legend"), {
+  onGoToStory: goToStory,
+  onHighlight: (threadId) => mapView.highlightThread(threadId),
+});
+const help = new HelpPage($("#intro"), {
+  onEnter(firstVisit) {
+    if (!firstVisit) return;
+    // First visit: hand the keyboard to the timeline and point at it once.
+    setTimeout(() => {
+      $(".tl-track").focus({ preventScroll: true });
+      timeline.showHint();
+    }, 450);
+  },
 });
 
 /* ------------------------------------------------------------------ render */
@@ -97,13 +118,19 @@ function render(state, prev, force = false) {
   if (state.storyId !== prev.storyId || state.eraIndex !== prev.eraIndex) {
     const s = getStory(state.storyId);
     if (s) {
-      storyCard.open(s);
+      // Make room first (era card and Threads shrink), then frame the pins in the space that's left.
       stage.classList.add("has-story");
+      threadsPanel.setStory(s.id);
+      storyCard.open(s);
       if (mapReady) mapView.select(s, threadNeighbours(s));
     } else if (prev.storyId) {
       storyCard.close();
       stage.classList.remove("has-story");
-      if (mapReady) mapView.clearSelection();
+      threadsPanel.setStory(null);
+      if (mapReady) {
+        mapView.clearSelection();
+        mapView.resetView(); // back to the view that shows every pin of this era
+      }
     }
   }
 
@@ -140,94 +167,41 @@ function readHash() {
   return idx >= 0 ? { eraIndex: idx, storyId: null, readerOpen: false } : null;
 }
 
-/* ------------------------------------------------------------------ header, legend, zoom */
+/* ------------------------------------------------------------------ header and map buttons */
+
+let searchBox;
 
 function buildHeader() {
+  const searchRoot = el("div", { class: "search", role: "search" });
+  searchBox = new SearchBox(searchRoot, { onGoToStory: goToStory, onGoToEra: goToEra });
+
+  const helpBtn = el("button", { class: "btn btn-ghost hdr-help", type: "button", "aria-label": "Help: what GeoStory is and how to use it", onclick: () => help.open(false) },
+    icon("help"), el("span", { class: "hdr-label" }, "Help"));
+
   const count = el("span", { class: "jr-count" }, journal.count());
-  const btn = el("button", { class: "btn btn-ghost hdr-journal", type: "button", onclick: () => store.set({ journalOpen: true }) },
-    icon("bookmark"), "Journal", count);
+  const journalBtn = el("button", { class: "btn btn-ghost hdr-journal", type: "button", onclick: () => store.set({ journalOpen: true }) },
+    icon("bookmark"), el("span", { class: "hdr-label" }, "Journal"), count);
   journal.subscribe((list) => {
     count.textContent = list.length;
-    btn.classList.remove("bump");
-    void btn.offsetWidth; // restart the little "saved" animation
-    btn.classList.add("bump");
+    journalBtn.classList.remove("bump");
+    void journalBtn.offsetWidth; // restart the little "saved" animation
+    journalBtn.classList.add("bump");
   });
-  const help = el("button", { class: "btn btn-ghost hdr-help", type: "button", "aria-label": "How to explore", onclick: () => showIntro(true) }, icon("keyboard"), el("span", { class: "hide-sm" }, "How to explore"));
-  $("#header-actions").append(help, btn);
+
+  $("#header-actions").append(searchRoot, helpBtn, journalBtn);
 }
 
-function buildLegend() {
-  const legend = $("#legend");
-  const list = el("ul", { class: "lg-list" });
-  for (const id of THREAD_ORDER) {
-    const t = THREADS[id];
-    const first = threadStories(id)[0];
-    list.append(el("li", {},
-      el("button", {
-        class: "lg-item", type: "button", style: { "--thread": t.color },
-        title: t.blurb,
-        onmouseenter: () => mapView.highlightThread(id),
-        onmouseleave: () => mapView.highlightThread(null),
-        onfocus: () => mapView.highlightThread(id),
-        onblur: () => mapView.highlightThread(null),
-        onclick: () => goToStory(first.id),
-      }, el("span", { class: "lg-swatch" }), el("span", { class: "lg-name" }, t.name), el("span", { class: "lg-go" }, "Start"))));
-  }
-  const toggle = el("button", { class: "lg-toggle", type: "button", "aria-expanded": "true", onclick: () => {
-    const open = legend.classList.toggle("is-collapsed") === false;
-    toggle.setAttribute("aria-expanded", String(open));
-  } }, icon("thread"), "Threads");
-  legend.append(toggle, list, el("p", { class: "lg-hint" }, "Each thread follows one story through time."));
-  if (window.innerHeight < 720) legend.classList.add("is-collapsed");
-}
-
+/**
+ * Map buttons. Each has a visible label on hover and on keyboard focus
+ * (Lab 7, issue H6: nobody could tell what the old globe icon did).
+ */
 function buildZoom() {
+  const button = (name, label, onclick) =>
+    el("button", { class: "icon-btn zoom-btn", type: "button", "aria-label": label, "data-tip": label, onclick, html: icon(name).innerHTML });
   $("#zoom-controls").append(
-    el("button", { class: "icon-btn", type: "button", "aria-label": "Zoom in", onclick: () => mapView.zoomBy(1.6), html: icon("plus").innerHTML }),
-    el("button", { class: "icon-btn", type: "button", "aria-label": "Zoom out", onclick: () => mapView.zoomBy(1 / 1.6), html: icon("minus").innerHTML }),
-    el("button", { class: "icon-btn", type: "button", "aria-label": "Show the whole world", onclick: () => mapView.resetView(), html: icon("globe").innerHTML }));
-}
-
-/* ------------------------------------------------------------------ intro */
-
-function showIntro(asHelp = false) {
-  const intro = $("#intro");
-  const close = () => {
-    intro.classList.remove("is-open");
-    setTimeout(() => (intro.hidden = true), 400);
-    document.removeEventListener("keydown", onKey);
-  };
-  const begin = (index, storyId) => {
-    close();
-    if (storyId) goToStory(storyId);
-    else goToEra(index);
-    setTimeout(() => $(".tl-track").focus({ preventScroll: true }), 450);
-  };
-  const onKey = (e) => {
-    if (e.key === "Escape") close();
-  };
-
-  intro.replaceChildren(el("div", { class: "intro-card" },
-    el("img", { class: "intro-logo", src: "img/logo.svg", alt: "", width: "64", height: "64" }),
-    el("p", { class: "intro-kicker" }, "A spatiotemporal journey through human history"),
-    el("h1", { class: "intro-title" }, "GeoStory"),
-    el("p", { class: "intro-lede" }, "13.8 billion years in 17 stops. Travel through time, open the stories on the map, and follow five threads that connect them."),
-    el("ol", { class: "intro-steps" },
-      el("li", {}, el("strong", {}, "Travel"), " Drag the timeline or press ← →"),
-      el("li", {}, el("strong", {}, "Explore"), " Tap a glowing pin to open its story"),
-      el("li", {}, el("strong", {}, "Follow"), " Continue a thread to the next chapter")),
-    el("div", { class: "intro-actions" },
-      asHelp
-        ? el("button", { class: "btn btn-gold", type: "button", onclick: close }, "Back to exploring")
-        : [
-            el("button", { class: "btn btn-gold", type: "button", onclick: () => begin(0) }, "Begin at the Big Bang", icon("arrowRight")),
-            el("button", { class: "btn btn-ghost-light", type: "button", onclick: () => begin(null, "mansa-musa") }, "Jump to 1324: Mansa Musa"),
-          ]),
-    el("p", { class: "intro-foot" }, "Stories are written from historical sources, listed under every story.")));
-  intro.hidden = false;
-  requestAnimationFrame(() => intro.classList.add("is-open"));
-  document.addEventListener("keydown", onKey);
-  intro.querySelector(".btn").focus();
+    button("plus", "Zoom in", () => mapView.zoomBy(1.6)),
+    button("minus", "Zoom out", () => mapView.zoomBy(1 / 1.6)),
+    button("reset", "Reset view", () => mapView.resetView()));
 }
 
 /* ------------------------------------------------------------------ keyboard */
@@ -235,8 +209,14 @@ function showIntro(asHelp = false) {
 document.addEventListener("keydown", (e) => {
   const tag = (e.target.tagName || "").toLowerCase();
   if (tag === "input" || tag === "textarea" || e.target.isContentEditable) return;
-  if (!$("#intro").hidden) return;
+  if (help.isOpen) return;
   const s = store.get();
+
+  if (e.key === "/" && !s.readerOpen && !s.journalOpen) {
+    e.preventDefault();
+    searchBox.focus();
+    return;
+  }
 
   if (e.key === "Escape") {
     if (s.readerOpen) store.set({ readerOpen: false });
@@ -254,7 +234,6 @@ document.addEventListener("keydown", (e) => {
 
 async function boot() {
   buildHeader();
-  buildLegend();
   buildZoom();
   checkAi();
 
@@ -270,7 +249,10 @@ async function boot() {
     mapReady = true;
     stage.classList.add("map-ready");
     const era = getEra(store.get().eraIndex);
-    if (era.kind === "map") mapView.setEra(era, storiesForEra(era.id));
+    if (era.kind === "map") {
+      mapView.setEra(era, storiesForEra(era.id));
+      mapView.resetView(false);
+    }
   } catch (err) {
     console.error(err);
     $("#map-status").textContent = "The map couldn't load. Make sure you started GeoStory with npm start, then refresh.";
@@ -278,7 +260,7 @@ async function boot() {
   }
 
   if (fromUrl && fromUrl.storyId) store.set({ storyId: fromUrl.storyId, readerOpen: fromUrl.readerOpen });
-  if (!fromUrl) showIntro();
+  if (!fromUrl) help.open(true); // a new visitor starts on the Help page
 
   window.addEventListener("pagehide", () => narrator.stop());
 

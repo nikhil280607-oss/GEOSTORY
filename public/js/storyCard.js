@@ -10,7 +10,7 @@
  */
 
 import { THREADS, threadNeighbours, eraLabelFor, getStory } from "./content.js";
-import { el, icon, safeImage } from "./util.js";
+import { el, icon, isSheet, safeImage } from "./util.js";
 import { journal } from "./journal.js";
 import { narrator } from "./narrator.js";
 import { createAskBox } from "./askBox.js";
@@ -25,9 +25,9 @@ export class StoryCard {
     journal.subscribe(() => this.syncSave());
   }
 
-  /** Width the map should keep clear when centring a pin (0 on small screens). */
+  /** Width the map should keep clear on the right (0 on phones, where the card is at the bottom). */
   width() {
-    return this.story && window.innerWidth >= 900 ? this.root.offsetWidth + 32 : 0;
+    return this.story && !isSheet() ? this.root.offsetWidth + 28 : 0;
   }
 
   open(story) {
